@@ -10,6 +10,8 @@ installNginx(){
     then
         echo '安装Nginx中，如遇到是否安装输入y'
         yum install nginx
+        rm -rf /etc/nginx/nginx.conf
+        wget -P /etc/nginx/  https://raw.githubusercontent.com/mack-a/v2ray-agent/master/config/nginx.conf
         echo '步骤二：Nginx安装成功，执行下一步'
     else
         # todo
@@ -26,6 +28,9 @@ installNginx(){
 installHttps(){
     echo '安装https中,请输入你要生成tls证书的域名'
     read -e domain
+    # grep "domain" * -R|awk -F: '{print $1}'|sort|uniq|xargs sed -i 's/domain/$domain/g'
+    # cat /etc/nginx/nginx.conf |grep "domain" * -R|awk -F: '{print $1}'|sort|uniq|xargs sed -i 's/domain/$domain/g'
+    sed -i "s/domain/$domain/g" 'grep domain -rl /etc/nginx/nginx.conf'
     curl https://get.acme.sh | sh
     sudo ~/.acme.sh/acme.sh --issue -d $domain --standalone -k ec-256
     ~/.acme.sh/acme.sh --installcert -d $domain --fullchainpath /etc/nginx/$domain.crt --keypath /etc/nginx/$domain.key --ecc
