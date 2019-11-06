@@ -10,6 +10,10 @@
 - [Nginx](https://www.nginx.com/)【反向代理】
 - [v2ray](v2ray.com)【代理工具】
 
+# 一键脚本（未完善）
+```
+bash <(curl -L -s https://raw.githubusercontent.com/mack-a/v2ray-agent/master/install.sh)
+```
 # 1.准备工作
 ## 1.注册[cloudflare](cloudflare.com)
 ## 2.注册[godaddy](https://www.godaddy.com/)并购买域名
