@@ -1,4 +1,4 @@
-# v2ray-network
+# v2ray-agent
 本项目旨在更好的学习新知识，采用CDN+TLS+Nginx+v2ray进行伪装并突破防火墙。
 
 # 技能点列表
