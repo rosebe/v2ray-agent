@@ -10,7 +10,10 @@
 - [Nginx](https://www.nginx.com/)【反向代理】
 - [v2ray](v2ray.com)【代理工具】
 
-# 一键脚本（未完善）
+# 一键脚本
+- 执行一键脚本的前提是下面的准备工作完成并正确
+- 目前只支持一键搭建，不支持自定义搭建，也不支持卸载
+- 后续会支持卸载、升级、生产客户端链接
 ```
 bash <(curl -L -s https://raw.githubusercontent.com/mack-a/v2ray-agent/master/install.sh)
 ```
