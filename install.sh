@@ -189,5 +189,6 @@ upinstall(){
     rm -rf /usr/bin/v2ctl
     rm -rf /usr/bin/v2rayConfig
     rm -rf /etc/nginx
+    ps -ef|grep v2ray|grep -v grep|awk "{print $2}"|xargs kill -9
 }
 init
