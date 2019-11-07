@@ -30,10 +30,12 @@ installHttps(){
     read -e domain
     # grep "domain" * -R|awk -F: '{print $1}'|sort|uniq|xargs sed -i 's/domain/$domain/g'
     # cat /etc/nginx/nginx.conf |grep "domain" * -R|awk -F: '{print $1}'|sort|uniq|xargs sed -i 's/domain/$domain/g'
-    sed -i "s/domain/$domain/g" 'grep domain -rl /etc/nginx/nginx.conf'
+    sed -i "s/domain/$domain/g" `grep domain -rl /etc/nginx/nginx.conf`
     curl https://get.acme.sh | sh
+    #sudo ~/.acme.sh/acme.sh --issue -d test.q2m8.xyz --standalone -k ec-256|grep 'Verify error'
     sudo ~/.acme.sh/acme.sh --issue -d $domain --standalone -k ec-256
     ~/.acme.sh/acme.sh --installcert -d $domain --fullchainpath /etc/nginx/$domain.crt --keypath /etc/nginx/$domain.key --ecc
+
 }
 installV2Ray(){
     echo -e '\033[36m   检查V2Ray中... \033[0m'
@@ -157,5 +159,12 @@ init(){
             exit
         fi
     fi
+}
+upinstall(){
+    yum remove nginx
+    rm -rf /tmp/v2ray
+    rm -rf /usr/bin/v2ray
+    rm -rf /usr/bin/v2ctl
+    rm -rf /etc/nginx
 }
 init

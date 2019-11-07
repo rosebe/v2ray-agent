@@ -103,12 +103,10 @@ yum install socat
 ```
 # 将下面这部分前面的#去掉，并将ssl_certificate、ssl_certificate_key修改成自己的路径
 
-# ssl on;
+# listen 443 ssl;
 # ssl_certificate /etc/nginx/ls.xx.xyz.crt;
 # ssl_certificate_key /etc/nginx/ls.xx.xyz.key;
-# ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-# ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
-# ssl_prefer_server_ciphers on;
+# server_name ls.xx.xyz
 ```
 
 - 5.每一次生成https证书后有效期只有三个月，需要快过期时更新（剩余七天内可以重新生成）
@@ -253,6 +251,7 @@ root      4562  1287  0 03:04 pts/0    00:00:00 grep --color=auto nginx
 ## 1.偶尔断流
 - 修改cloudflare Firwall Rules->create a Firewall rule
 - - 设置Field:URI path
+// 这里的/v2 是你的v2ray的path
 - - 设置：value:/v2
 - - Choose an action:Allow
 
