@@ -34,6 +34,8 @@ installHttps(){
     curl https://get.acme.sh | sh
     sudo ~/.acme.sh/acme.sh --issue -d $domain --standalone -k ec-256
     ~/.acme.sh/acme.sh --installcert -d $domain --fullchainpath /etc/nginx/$domain.crt --keypath /etc/nginx/$domain.key --ecc
+    sed -i "s/# ssl_certificate/ssl_certificate/g" `grep "# ssl_certificate" -rl /etc/nginx/nginx.conf`
+    sed -i "s/listen 443/listen 443 ssl/g" `grep "listen 443" -rl /etc/nginx/nginx.conf`
     echo '步骤三：Https安装成功，执行下一步'
 }
 installV2Ray(){
@@ -76,7 +78,7 @@ checkOS(){
 }
 startServer(){
     nginx
-    /usr/bin/v2ray /usr/bin/v2rayConfig/config_ws_tls.json &
+    /usr/bin/v2ray -config /usr/bin/v2rayConfig/config_ws_tls.json &
 }
 installTools(){
     existProcessWget=`ps -ef|grep wget|grep -v grep`
@@ -139,6 +141,10 @@ automationFun(){
         ;;
         4)
             installV2Ray
+            automationFun 5
+        ;;
+        5)
+            startServer
             echo '安装完毕'
             exit
         ;;
@@ -150,6 +156,7 @@ init(){
     echo -e "\033[36m  2.检测nginx是否安装并配置 \033[0m"
     echo -e "\033[36m  3.检测https是否安装并配置 \033[0m"
     echo -e "\033[36m  4.检测V2Ray是否安装并配置 \033[0m"
+    echo -e "\033[36m  5.启动服务并退出脚本 \033[0m"
     echo -e "\033[35m是否进入手动模式y，键入回车进入自动模式（暂时只支持自动模式）: \033[0m "
     read -e automatic
     if [ "$automatic" = "y" ]
@@ -175,6 +182,7 @@ init(){
 }
 upinstall(){
     nginx -s stop
+    rm -rf ~/.acme.sh
     yum remove nginx
     rm -rf /tmp/v2ray
     rm -rf /usr/bin/v2ray
