@@ -32,10 +32,9 @@ installHttps(){
     # cat /etc/nginx/nginx.conf |grep "domain" * -R|awk -F: '{print $1}'|sort|uniq|xargs sed -i 's/domain/$domain/g'
     sed -i "s/domain/$domain/g" `grep domain -rl /etc/nginx/nginx.conf`
     curl https://get.acme.sh | sh
-    #sudo ~/.acme.sh/acme.sh --issue -d test.q2m8.xyz --standalone -k ec-256|grep 'Verify error'
     sudo ~/.acme.sh/acme.sh --issue -d $domain --standalone -k ec-256
     ~/.acme.sh/acme.sh --installcert -d $domain --fullchainpath /etc/nginx/$domain.crt --keypath /etc/nginx/$domain.key --ecc
-
+    echo '步骤三：Https安装成功，执行下一步'
 }
 installV2Ray(){
     echo -e '\033[36m   检查V2Ray中... \033[0m'
@@ -49,7 +48,11 @@ installV2Ray(){
         unzip /tmp/v2ray/v2ray-linux-64.zip
         mv /tmp/v2ray/v2ray /usr/bin/
         mv /tmp/v2ray/v2ctl /usr/bin/
-        echo '步骤二：V2Ray安装成功，执行下一步'
+        mkdir /usr/bin/v2rayConfig
+        wget -P /usr/bin/v2rayConfig https://raw.githubusercontent.com/mack-a/v2ray-agent/master/config/config_ws_tls.json
+        touch /usr/bin/v2rayConfig/v2ray_access.log
+        touch /usr/bin/v2rayConfig/v2ray_error.log
+        echo '步骤三：V2Ray安装成功，执行下一步'
     else
         # todo
         echo '检查到V2Ray存在，是否停止并卸载，输入y确认：'
@@ -70,6 +73,10 @@ checkOS(){
     else
         echo '目前仅支持Centos'
     fi
+}
+startServer(){
+    nginx
+    /usr/bin/v2ray /usr/bin/v2rayConfig/config_ws_tls.json &
 }
 installTools(){
     existProcessWget=`ps -ef|grep wget|grep -v grep`
@@ -127,11 +134,11 @@ automationFun(){
             automationFun 3
         ;;
         3)
-            installV2Ray
-            automationFun 4
+           installHttps
+           automationFun 4
         ;;
         4)
-            installHttps
+            installV2Ray
             echo '安装完毕'
             exit
         ;;
@@ -143,28 +150,36 @@ init(){
     echo -e "\033[36m  2.检测nginx是否安装并配置 \033[0m"
     echo -e "\033[36m  3.检测https是否安装并配置 \033[0m"
     echo -e "\033[36m  4.检测V2Ray是否安装并配置 \033[0m"
-    echo -e "\033[35m是否进入手动模式y，键入回车进入自动模式: \033[0m"
+    echo -e "\033[35m是否进入手动模式y，键入回车进入自动模式（暂时只支持自动模式）: \033[0m "
     read -e automatic
     if [ "$automatic" = "y" ]
     then
         echo '手动模式'
     else
-        automationFun 1
-
         if [ $? = 1 ]
         then
-            manageFun installNginx
+            echo -e "\033[35m请检查是否将下列文档 [https://github.com/mack-a/v2ray-agent#1%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C] 中 [1.准备工作] 已全部完成，并检查,键入y确定准备完毕\033[0m "
+            read -e prepareStatus
+            if [ "$prepareStatus" = "y" ]
+            then
+                automationFun 1
+            else
+                echo '退出脚本'
+                exit
+            fi
         else
-            echo '退出脚本'
-            exit
+                echo '退出脚本'
+                exit
         fi
     fi
 }
 upinstall(){
+    nginx -s stop
     yum remove nginx
     rm -rf /tmp/v2ray
     rm -rf /usr/bin/v2ray
     rm -rf /usr/bin/v2ctl
+    rm -rf /usr/bin/v2rayConfig
     rm -rf /etc/nginx
 }
 init
