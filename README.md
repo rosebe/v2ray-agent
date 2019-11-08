@@ -13,11 +13,12 @@
 # 一键脚本
 - 此脚本在Google cloud测试成功，系统为Centos7
 - 执行一键脚本的前提是下面的 [1.准备工作] 完成并正确
-- 目前只支持一键搭建，不支持自定义搭建，也不支持卸载
-- 后续会支持卸载、升级、生产客户端链接、开机自启
+- 支持一键搭建、支持部分手动模块
+- 后续会支持升级、生成客户端链接（shadowrocket、Quantumult）、开机自启、HTTPS续签
 ```
 bash <(curl -L -s https://raw.githubusercontent.com/mack-a/v2ray-agent/master/install.sh)
 ```
+<img src="https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/一键脚本示例图.png" width=400>
 # 1.准备工作
 ## 1.注册[cloudflare](cloudflare.com)
 ## 2.注册[godaddy](https://www.godaddy.com/)并购买域名
