@@ -19,6 +19,7 @@
 bash <(curl -L -s https://raw.githubusercontent.com/mack-a/v2ray-agent/master/install.sh)
 ```
 <img src="https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/一键脚本示例图.png" width=400>
+
 # 1.准备工作
 ## 1.注册[cloudflare](cloudflare.com)
 ## 2.注册[godaddy](https://www.godaddy.com/)并购买域名
