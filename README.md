@@ -416,8 +416,9 @@ tcp_bbr                20480  28
 - 2.源站类型-填写自有源站
 - 3.源站设置填写你的vps ip
 - 4.加速类型选择流媒体点播加速
-- 5.等待部署完成
-<img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/腾讯CDN示例图01.png'/>
+- 5.关闭过滤参数
+- 6.等待部署完成
+<img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/腾讯CDN示例图01.png' width=400/>
 
 #### 2.配置HTTPS证书
 - 1.点击配置好的域名-高级设置-HTTPS配置
@@ -435,6 +436,6 @@ tcp_bbr                20480  28
 - 4.解析线路默认即可
 - 5.记录值填写 腾讯CDN-点击域名-基本配置-CNAME值
 
-<img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/CDN域名解析.png'/>
+<img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/CDN域名解析 CNAME.png' width=400/>
 
 
