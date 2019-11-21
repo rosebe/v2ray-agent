@@ -403,3 +403,38 @@ lsmod | grep bbr
 ```
 tcp_bbr                20480  28
 ```
+
+# 8.更换中国大陆地区CDN
+- 只是更换CDN其余配置内容不变
+## 1.腾讯CDN[月免费10GB]
+### 1.准备工作
+- 1.域名【需要大陆备案】
+- 2.HTTPS证书【备案的域名的证书，可以使用上方的脚本生成】
+### 2.[点击此链接，配置腾讯云CDN](https://console.cloud.tencent.com/cdn/access)
+#### 1.配置域名【域名管理-添加域名】
+- 1.域名填写备案过的域名（你要加速的域名）
+- 2.源站类型-填写自有源站
+- 3.源站设置填写你的vps ip
+- 4.加速类型选择流媒体点播加速
+- 5.等待部署完成
+<img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/腾讯CDN示例图01.png'/>
+
+#### 2.配置HTTPS证书
+- 1.点击配置好的域名-高级设置-HTTPS配置
+- 2.证书内容-填写上方生成证书的结尾为 .crt文件里面的全部内容
+- 3.私钥内容-填写上方生成证书结尾为 .key文件里面的全部内容
+- 4.回源方式-协议跟随
+
+#### 3.回源配置
+- 1.点击配置好的域名-回源配置-取消掉Range回源
+
+#### 4.增加域名解析CNAME值
+- 1.我这里用的是阿里云的云解析DNS
+- 2.记录类型为CNAME
+- 3.主机记录则是你要配置的三级域名（国际规范）例如:test.xxx.com 这里填test
+- 4.解析线路默认即可
+- 5.记录值填写 腾讯CDN-点击域名-基本配置-CNAME值
+
+<img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/CDN域名解析.png'/>
+
+
