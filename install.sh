@@ -9,7 +9,6 @@ magenta="\e[95m"
 cyan="\e[96m"
 none="\e[0m"
 
-# todo 先完善正常步骤
 installNginx(){
     echo -e "${skyBlue}检查Nginx中...${none} "
     existProcessNginx=`ps -ef|grep nginx|grep -v grep`
@@ -22,14 +21,24 @@ installNginx(){
         wget -P /etc/nginx/  https://raw.githubusercontent.com/mack-a/v2ray-agent/master/config/nginx.conf
         echo -e "${green}步骤二：Nginx安装成功，执行下一步 ${none}"
     else
-        # todo
-        echo -e "${purple}检查到Nginx存在，是否停止并卸载，输入y确认：${none}"
+        echo -e "${purple}检查到Nginx存在，是否卸载并重新安装，输入${none}${skyBlue}【y】${none}${purple}确认：${none}"
         read -e unstallStatus
-        if [[ $unstallStatus -eq "y" ||  $unstallStatus -eq "Y" ]]
+        if [ "${unstallStatus}" = "y" ]
         then
-            echo "卸载"
+            if [[ -n "$existProcessNginx" ]]
+            then
+                echo -e "${purple}Nginx已启动，关闭中...${none}"
+                nginx -s stop
+            else
+                echo -e "${skyBlue}卸载Nginx中... ${none}"
+                yum remove nginx
+                echo -e "${skyBlue}卸载Nginx完毕，重装中... ${none}"
+                installNginx;
+            fi
         else
-            echo "不卸载，停止脚本"
+            echo "不卸载，返回主目录"
+            echo
+            init
         fi
     fi
 }
@@ -79,7 +88,7 @@ checkOS(){
     systemVersion=`cat /etc/redhat-release|grep CentOS|awk '{print $1}'`
     if [ -n "$systemVersion" ] && [ "$systemVersion" == "CentOS" ]
     then
-        echo -e "${purple}步骤一：系统为CentOS脚本可执行  ${none} "
+        echo -e "${green}步骤一：系统为CentOS脚本可执行  ${none} "
     else
         echo -e "${red}目前仅支持Centos${none}"
         echo -e "${red}退出脚本${none}"
@@ -132,8 +141,8 @@ unInstall(){
     ps -ef|grep v2ray|grep -v grep|awk '{print ${2}'|xargs kill -9
 }
 manageFun(){
-    echo
-    echo -e "${purple}  手动模式功能点目录:${none}"
+    echo -e "${purple}===============================${none}"
+    echo -e "${purple}手动模式功能点目录:${none}"
     echo -e "${skyBlue}  1.检查系统版本是否为CentOS${none}"
     echo -e "${skyBlue}  2.安装工具包${none}"
     echo -e "${skyBlue}  3.检测nginx是否安装并配置${none}"
@@ -143,8 +152,11 @@ manageFun(){
     echo -e "${skyBlue}  7.卸载安装的所有内容【完成】${none}"
     echo -e "${skyBlue}  8.返回主目录【完成】${none}"
     echo -e "${red}  9.退出脚本${none}"
-    echo
-    echo -e "${red}请输入要执行的功能【数字编号】:${none}"
+    echo -e "${purple}===============================${none}"
+    echo -e "${skyBlue}请输入要执行的功能【数字编号】:${none}"
+
+
+
     read -e funType
     case $funType in
         1)
@@ -153,12 +165,12 @@ manageFun(){
         2)
             installTools
         ;;
-#        3)
-#            installNginx
-#        ;;
-#        4)
-#            installHttps
-#        ;;
+        3)
+            installNginx
+        ;;
+        4)
+            installHttps
+        ;;
 #        5)
 #            installV2Ray
 #        ;;
@@ -204,36 +216,28 @@ automationFun(){
 }
 init(){
     echo -e "${purple}目前此脚本在GCP CentOS7上面测试通过${none}"
-    echo -e "${purple}自动模式会执行以下内容:${none}"
-    echo -e "${skyBlue}  1.检查系统版本是否为CentOS${none}"
-    echo -e "${skyBlue}  2.安装工具包${none}"
-    echo -e "${skyBlue}  3.检测nginx是否安装并配置${none}"
-    echo -e "${skyBlue}  4.检测https是否安装并配置${none}"
-    echo -e "${skyBlue}  5.检测V2Ray是否安装并配置${none}"
-    echo -e "${skyBlue}  6.启动服务并退出脚本${none}"
-    echo
-    echo -e "${red}是否进入手动模式y，键入回车进入自动模式（暂时只支持自动模式和部分手动模式功能）:${none}"
+    echo -e "${purple}===============================${none}"
+    echo -e "${purple}支持两种模式：${none}"
+    echo -e "${red}    1.自动模式${none}"
+    echo -e "${red}    2.手动模式${none}"
+    echo -e "${purple}===============================${none}"
+    echo -e "${skyBlue}请选择【数字编号】:${none}"
     read -e automatic
-    if [ "${automatic}" = "y" ]
+    if [ "${automatic}" = 1 ]
+    then
+        echo -e "${purple}===============================${none}"
+        echo -e "${purple}自动模式会执行以下内容:${none}"
+        echo -e "${skyBlue}  1.检查系统版本是否为CentOS${none}"
+        echo -e "${skyBlue}  2.安装工具包${none}"
+        echo -e "${skyBlue}  3.检测nginx是否安装并配置${none}"
+        echo -e "${skyBlue}  4.检测https是否安装并配置${none}"
+        echo -e "${skyBlue}  5.检测V2Ray是否安装并配置${none}"
+        echo -e "${skyBlue}  6.启动服务并退出脚本${none}"
+        echo -e "${purple}===============================${none}"
+        automationFun 1
+    elif [[ "${automatic}" = 2 ]]
     then
         manageFun
-    else
-        if [ $? = 1 ]
-        then
-            echo -e "${purple}请检查是否将下列文档${none}\n${skyBlue} [https://github.com/mack-a/v2ray-agent#1%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C] 中的[1.准备工作] 已全部完成，并检查正确${none} \n${purple}键入y确定准备完毕 ${none}"
-            read -e prepareStatus
-            if [ "${prepareStatus}" = "y" ]
-            then
-                echo "自动模式"
-                automationFun 1
-            else
-                echo "退出脚本"
-                exit
-            fi
-        else
-                echo "退出脚本"
-                exit
-        fi
     fi
 }
 init
