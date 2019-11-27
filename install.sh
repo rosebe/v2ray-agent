@@ -21,7 +21,7 @@ installNginx(){
         wget -P /etc/nginx/  https://raw.githubusercontent.com/mack-a/v2ray-agent/master/config/nginx.conf
         echo -e "${green}步骤二：Nginx安装成功，执行下一步 ${none}"
     else
-        echo -e "${purple}检查到Nginx存在，是否卸载并重新安装，输入${none}${skyBlue}【y】${none}${purple}确认：${none}"
+        echo -e "${purple}检查到Nginx存在，是否卸载并重新安装【会把默认的安装目录的内容删除】，输入${none}${skyBlue}【y】${none}${purple}确认：${none}，输入${none}${skyBlue}【其余任意字符】${none}${purple}返回主目录${none}"
         read -e unstallStatus
         if [ "${unstallStatus}" = "y" ]
         then
@@ -38,7 +38,7 @@ installNginx(){
         else
             echo "不卸载，返回主目录"
             echo
-            init
+            manageFun
         fi
     fi
 }
@@ -47,13 +47,54 @@ installHttps(){
     read -e domain
     # grep "domain" * -R|awk -F: "{print $1}"|sort|uniq|xargs sed -i "s/domain/$domain/g"
     # cat /etc/nginx/nginx.conf |grep "domain" * -R|awk -F: "{print $1}"|sort|uniq|xargs sed -i "s/domain/$domain/g"
-    sed -i "s/domain/$domain/g" `grep domain -rl /etc/nginx/nginx.conf`
-    curl https://get.acme.sh | sh
-    sudo ~/.acme.sh/acme.sh --issue -d $domain --standalone -k ec-256
-    ~/.acme.sh/acme.sh --installcert -d $domain --fullchainpath /etc/nginx/$domain.crt --keypath /etc/nginx/$domain.key --ecc
-    sed -i "s/# ssl_certificate/ssl_certificate/g" `grep "# ssl_certificate" -rl /etc/nginx/nginx.conf`
-    sed -i "s/listen 443/listen 443 ssl/g" `grep "listen 443" -rl /etc/nginx/nginx.conf`
-    echo -e "${green}步骤三：Https安装成功，执行下一步${none}"
+    existProcessNginx=`ps -ef|grep nginx|grep -v grep`
+    if [ ! -z "${existProcessNginx}" ]
+    then
+        echo '检测到Nginx正在运行，关闭中...'
+        nginx -s stop
+    fi
+
+    if [ -d "/etc/nginx/nginx.conf" ]
+    then
+        noExistNginxConfigDomain=`cat /etc/nginx/nginx.conf|grep $domain|grep -v grep`
+        if [ ! -z "${noExistNginxConfigDomain}" ]
+        then
+            sed -i "s/$domain/domain/g" `grep $domain -rl /etc/nginx/nginx.conf`
+        fi
+        sed -i "s/domain/$domain/g" `grep domain -rl /etc/nginx/nginx.conf`
+    fi
+
+    uninstallAcmeStatus="false"
+    if [ ! -d "/root/.acme.sh" ]
+    then
+        echo -e "${skyBlue}安装acme.sh中...${none}"
+        curl https://get.acme.sh | sh
+        sudo ~/.acme.sh/acme.sh --issue -d $domain --standalone -k ec-256
+    else
+        echo -e "${purple}检测到已安装acme.sh，是否卸载${none}"
+        echo -e "${red}    1.卸载并重新安装【以前生成的TLS证书会被删除，需要重新输入域名】${none}"
+        echo -e "${red}    2.跳过并使用已经安装的acme.sh${none}"
+        echo -e "${purple}===============================${none}"
+        echo -e "${skyBlue}请选择【数字编号】:${none}"
+        read -e acmeStatus
+        if [ "${acmeStatus}" = 1 ]
+        then
+            rm -rf ~/.acme.sh
+            uninstallAcmeStatus="true"
+        else
+            echo -e "${skyBlue}生成证书中...${none}"
+        fi
+    fi
+
+    if [ "${uninstallAcmeStatus}" = "true" ]
+    then
+        installHttps
+    else
+        ~/.acme.sh/acme.sh --installcert -d $domain --fullchainpath /etc/nginx/$domain.crt --keypath /etc/nginx/$domain.key --ecc
+        sed -i "s/# ssl_certificate/ssl_certificate/g" `grep "# ssl_certificate" -rl /etc/nginx/nginx.conf`
+        sed -i "s/listen 443/listen 443 ssl/g" `grep "listen 443" -rl /etc/nginx/nginx.conf`
+        echo -e "${green}步骤三：HTTPS执行完毕，请手动确认上方是否有错误，执行下一步${none}"
+    fi
 }
 installV2Ray(){
     echo -e "${skyBlue}检查V2Ray中...${none} "
@@ -169,6 +210,7 @@ manageFun(){
             installNginx
         ;;
         4)
+            echo -e "${red}此步骤依赖【3.检测nginx是否安装并配置】${none}"
             installHttps
         ;;
 #        5)
