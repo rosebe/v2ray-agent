@@ -1,4 +1,7 @@
-# 有问题或者有想要加的功能可以在issus提交或者可以加入下方的电报群
+# v2ray-agent
+本项目旨在更好的学习新知识，采用CDN+TLS+Nginx+v2ray进行伪装并突破防火墙。
+
+## 有问题或者有想要加的功能可以在issus提交或者可以加入下方的电报群
 [点击此链接加入电报群](https://t.me/joinchat/L68JqRQMroH78jqLI1HdcA)
 * * *
 # 目录
@@ -50,9 +53,6 @@
       - [2.配置HTTPS证书](#2配置https证书)
       - [3.回源配置](#3回源配置)
       - [4.增加域名解析CNAME值](#4增加域名解析cname值)
-
-# v2ray-agent
-本项目旨在更好的学习新知识，采用CDN+TLS+Nginx+v2ray进行伪装并突破防火墙。
 
 # 技能点列表
 - [bandwagonhost[centos7]链接一](https://bandwagonhost.com)
