@@ -53,7 +53,7 @@
       - [2.配置HTTPS证书](#2配置https证书)
       - [3.回源配置](#3回源配置)
       - [4.增加域名解析CNAME值](#4增加域名解析cname值)
-
+* * *
 # 技能点列表
 - [bandwagonhost[centos7]链接一](https://bandwagonhost.com)
 - [bandwagonhost[centos7]链接二](https://bwh1.net)【境外vps或者其他vps厂商】
