@@ -21,20 +21,24 @@ installNginx(){
         wget -P /etc/nginx/  https://raw.githubusercontent.com/mack-a/v2ray-agent/master/config/nginx.conf
         echo -e "${green}步骤二：Nginx安装成功，执行下一步 ${none}"
     else
-        echo -e "${purple}检查到Nginx存在，是否卸载并重新安装【会把默认的安装目录的内容删除】，输入${none}${skyBlue}【y】${none}${purple}确认：${none}，输入${none}${skyBlue}【其余任意字符】${none}${purple}返回主目录${none}"
-        read -e unstallStatus
-        if [ "${unstallStatus}" = "y" ]
+        echo -e "${purple}===============================${none}"
+        echo -e "${purple}检测到已安装Nginx，是否卸载${none}"
+        echo -e "${red}    1.卸载并重新安装【会把默认的安装目录的内容删除】${none}"
+        echo -e "${red}    2.跳过并使用已经安装的Nginx以及配置文件【请确认是否是此脚本的配置文件】${none}"
+        echo -e "${purple}===============================${none}"
+        echo -e "${skyBlue}请选择【数字编号】:${none}"
+        read -e nginxStatus
+        if [ "${nginxStatus}" = 1 ]
         then
-            if [[ -n "$existProcessNginx" ]]
+            if [ -n "$existProcessNginx" ]
             then
                 echo -e "${purple}Nginx已启动，关闭中...${none}"
                 nginx -s stop
-            else
-                echo -e "${skyBlue}卸载Nginx中... ${none}"
-                yum remove nginx
-                echo -e "${skyBlue}卸载Nginx完毕，重装中... ${none}"
-                installNginx;
             fi
+            echo -e "${skyBlue}卸载Nginx中... ${none}"
+            yum remove nginx
+            echo -e "${skyBlue}卸载Nginx完毕，重装中... ${none}"
+            installNginx;
         else
             echo "不卸载，返回主目录"
             echo
@@ -54,7 +58,7 @@ installHttps(){
         nginx -s stop
     fi
 
-    if [ -d "/etc/nginx/nginx.conf" ]
+    if [ -f "/etc/nginx/nginx.conf" ]
     then
         noExistNginxConfigDomain=`cat /etc/nginx/nginx.conf|grep $domain|grep -v grep`
         if [ ! -z "${noExistNginxConfigDomain}" ]
@@ -71,6 +75,7 @@ installHttps(){
         curl https://get.acme.sh | sh
         sudo ~/.acme.sh/acme.sh --issue -d $domain --standalone -k ec-256
     else
+        echo -e "${purple}===============================${none}"
         echo -e "${purple}检测到已安装acme.sh，是否卸载${none}"
         echo -e "${red}    1.卸载并重新安装【以前生成的TLS证书会被删除，需要重新输入域名】${none}"
         echo -e "${red}    2.跳过并使用已经安装的acme.sh${none}"
