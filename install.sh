@@ -132,9 +132,9 @@ installV2Ray(){
             rm -rf /usr/bin/v2ray
             rm -rf /usr/bin/v2ctl
             rm -rf /usr/bin/V2RayConfig
-            if [ -z `ps -ef|grep v2ray|grep -v grep|awk '{print ${2}'` ]
+            if [ -z `ps -ef|grep v2ray|grep -v grep|awk '{print $2}'` ]
             then
-                ps -ef|grep v2ray|grep -v grep|awk '{print ${2}'|xargs kill -9
+                ps -ef|grep v2ray|grep -v grep|awk '{print $2}'|xargs kill -9
             fi
             installV2Ray
         else
@@ -196,7 +196,20 @@ unInstall(){
     rm -rf /usr/bin/v2ctl
     rm -rf /usr/bin/V2RayConfig
     rm -rf /etc/nginx
-    ps -ef|grep v2ray|grep -v grep|awk '{print ${2}'|xargs kill -9
+    ps -ef|grep v2ray|grep -v grep|awk '{print $2}'|xargs kill -9
+}
+configPath(){
+    echo -e "${purple}===============================${none}"
+    echo -e "${red}路径如下${none}"
+    echo -e "${green} 1.v2ray${none}"
+    echo -e "${skyBlue}   1./usr/bin/v2ray 【V2Ray 程序】${none}"
+    echo -e "${skyBlue}   2./usr/bin/v2ctl 【V2Ray 工具】${none}"
+    echo -e "${skyBlue}   3./usr/bin/V2RayConfig 【V2Ray配置文件，配置文件、log文件】${none}"
+    echo -e "${green} 2.Nginx${none}"
+    echo -e "${skyBlue}   1./usr/sbin/nginx 【Nginx 程序】${none}"
+    echo -e "${skyBlue}   2./etc/nginx/nginx.conf 【Nginx 配置文件】${none}"
+    echo -e "${purple}===============================${none}"
+    echo
 }
 manageFun(){
     echo -e "${purple}===============================${none}"
@@ -208,14 +221,13 @@ manageFun(){
     echo -e "${skyBlue}  5.检测V2Ray是否安装并配置${none}"
     echo -e "${skyBlue}  6.启动服务并退出脚本${none}"
     echo -e "${skyBlue}  7.卸载安装的所有内容${none}"
-    echo -e "${skyBlue}  8.返回主目录${none}"
-    echo -e "${red}  9.退出脚本${none}"
+    echo -e "${skyBlue}  8.查看配置文件路径${none}"
+    echo -e "${skyBlue}  9.返回主目录${none}"
+    echo -e "${red}  10.退出脚本${none}"
     echo -e "${purple}===============================${none}"
     echo -e "${skyBlue}请输入要执行的功能【数字编号】:${none}"
-
-
-
     read -e funType
+    echo
     case $funType in
         1)
             checkOS
@@ -233,18 +245,21 @@ manageFun(){
         5)
             installV2Ray
         ;;
-#        6)
-#            startServer
-#        ;;
-         7)
-             unInstall
-         ;;
-         8)
-            init
-         ;;
-         9)
-            exit
-         ;;
+        6)
+            startServer
+        ;;
+        7)
+            unInstall
+        ;;
+        8)
+           configPath
+        ;;
+        9)
+           init
+        ;;
+        10)
+           exit
+        ;;
     esac
     manageFun
 }
@@ -273,6 +288,7 @@ automationFun(){
         ;;
     esac
 }
+
 init(){
     echo -e "${purple}目前此脚本在GCP CentOS7上面测试通过${none}"
     echo -e "${purple}===============================${none}"
