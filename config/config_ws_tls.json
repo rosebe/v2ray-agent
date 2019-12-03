@@ -1,7 +1,7 @@
 {
   "log": {
-    "access": "/usr/bin/v2rayConfig/v2ray_access.log",
-    "error": "/usr/bin/v2rayConfig/v2ray_error.log",
+    "access": "/usr/bin/V2RayConfig/V2Ray_access.log",
+    "error": "/usr/bin/V2RayConfig/V2Ray_access.log",
     "loglevel": "warning"
   },
   "stats": {},

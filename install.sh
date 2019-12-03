@@ -100,28 +100,40 @@ installV2Ray(){
     echo -e "${skyBlue}检查V2Ray中...${none} "
     existProcessV2Ray=`ps -ef|grep v2ray|grep -v grep`
     existV2Ray=`command -v v2ray`
-    if [ -z "$existProcessV2Ray" ] && [ -z "$existV2Ray" ]
+    if [ -z "$existProcessV2Ray" ] && [ -z "$existV2Ray" ] && [ ! -x "/usr/bin/v2ray" ]
     then
         echo -e "${skyBlue}安装V2Ray中... ${none}"
-        wget -P /tmp/v2ray https://github.com/v2ray/v2ray-core/releases/download/v4.21.3/v2ray-linux-64.zip
-        cd /tmp/v2ray
-        unzip /tmp/v2ray/v2ray-linux-64.zip
-        mv /tmp/v2ray/v2ray /usr/bin/
-        mv /tmp/v2ray/v2ctl /usr/bin/
-        mkdir /usr/bin/v2rayConfig
-        wget -P /usr/bin/v2rayConfig https://raw.githubusercontent.com/mack-a/v2ray-agent/master/config/config_ws_tls.json
-        touch /usr/bin/v2rayConfig/v2ray_access.log
-        touch /usr/bin/v2rayConfig/v2ray_error.log
+        wget -P /tmp/V2Ray https://github.com/V2Ray/V2Ray-core/releases/download/v4.21.3/V2Ray-linux-64.zip
+        cd /tmp/V2Ray
+        unzip /tmp/V2Ray/V2Ray-linux-64.zip
+        mv /tmp/V2Ray/v2ray /usr/bin/
+        mv /tmp/V2Ray/v2ctl /usr/bin/
+        mkdir /usr/bin/V2RayConfig
+        wget -P /usr/bin/V2RayConfig https://raw.githubusercontent.com/mack-a/V2Ray-agent/master/config/config_ws_tls.json
+        touch /usr/bin/V2RayConfig/V2Ray_access.log
+        touch /usr/bin/V2RayConfig/V2Ray_error.log
         echo -e "${green} 步骤三：V2Ray安装成功，执行下一步"
     else
-        # todo
-        echo -e "检查到V2Ray存在，是否停止并卸载，输入y确认："
-        read -e unstallStatus
-        if [[ $unstallStatus -eq "y" ||  $unstallStatus -eq "Y" ]]
+        echo -e "${purple}===============================${none}"
+        echo -e "${purple}检测到已安装V2Ray，是否卸载${none}"
+        echo -e "${red}    1.卸载并重新安装【配置文件会重新生成】${none}"
+        echo -e "${red}    2.跳过并使用已经安装的V2Ray【请确认Nginx的配置与V2Ray配置相同【端口号、Path】】${none}"
+        echo -e "${purple}===============================${none}"
+        echo -e "${skyBlue}请选择【数字编号】:${none}"
+        read -e acmeStatus
+        if [ "${acmeStatus}" = 1 ]
         then
-            echo "卸载"
+            rm -rf /tmp/V2Ray
+            rm -rf /usr/bin/v2ray
+            rm -rf /usr/bin/v2ctl
+            rm -rf /usr/bin/V2RayConfig
+            if [ -z `ps -ef|grep v2ray|grep -v grep|awk '{print ${2}'` ]
+            then
+                ps -ef|grep v2ray|grep -v grep|awk '{print ${2}'|xargs kill -9
+            fi
+            installV2Ray
         else
-            echo "不卸载，停止脚本"
+            echo -e "${green} 忽略V2Ray并继续执行"
         fi
     fi
 }
@@ -139,7 +151,7 @@ checkOS(){
 startServer(){
     echo -e "${green}启动服务${none}"
     nginx
-    /usr/bin/v2ray -config /usr/bin/v2rayConfig/config_ws_tls.json &
+    /usr/bin/v2ray -config /usr/bin/V2RayConfig/config_ws_tls.json &
     echo "启动完毕"
 }
 installTools(){
@@ -174,10 +186,10 @@ unInstall(){
     nginx -s stop
     rm -rf ~/.acme.sh
     yum remove nginx
-    rm -rf /tmp/v2ray
+    rm -rf /tmp/V2Ray
     rm -rf /usr/bin/v2ray
     rm -rf /usr/bin/v2ctl
-    rm -rf /usr/bin/v2rayConfig
+    rm -rf /usr/bin/V2RayConfig
     rm -rf /etc/nginx
     ps -ef|grep v2ray|grep -v grep|awk '{print ${2}'|xargs kill -9
 }
@@ -190,8 +202,8 @@ manageFun(){
     echo -e "${skyBlue}  4.检测https是否安装并配置${none}"
     echo -e "${skyBlue}  5.检测V2Ray是否安装并配置${none}"
     echo -e "${skyBlue}  6.启动服务并退出脚本${none}"
-    echo -e "${skyBlue}  7.卸载安装的所有内容【完成】${none}"
-    echo -e "${skyBlue}  8.返回主目录【完成】${none}"
+    echo -e "${skyBlue}  7.卸载安装的所有内容${none}"
+    echo -e "${skyBlue}  8.返回主目录${none}"
     echo -e "${red}  9.退出脚本${none}"
     echo -e "${purple}===============================${none}"
     echo -e "${skyBlue}请输入要执行的功能【数字编号】:${none}"
@@ -213,9 +225,9 @@ manageFun(){
             echo -e "${red}此步骤依赖【3.检测nginx是否安装并配置】${none}"
             installHttps
         ;;
-#        5)
-#            installV2Ray
-#        ;;
+        5)
+            installV2Ray
+        ;;
 #        6)
 #            startServer
 #        ;;
@@ -277,7 +289,7 @@ init(){
         echo -e "${skyBlue}  6.启动服务并退出脚本${none}"
         echo -e "${purple}===============================${none}"
         automationFun 1
-    elif [[ "${automatic}" = 2 ]]
+    elif [ "${automatic}" = 2 ]
     then
         manageFun
     fi
