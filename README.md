@@ -450,4 +450,91 @@ tcp_bbr                20480  28
 
 <img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/CDN域名解析 CNAME.png' width=400/>
 
+# 9.cloudflare CNAME自选ip优化方案
+## 1.准备工作
+### 1.免费的智能DNS解析
+- 1.[dnspod](https://www.dnspod.cn/)
+- 2.[cloudxns](https://www.cloudxns.net/)
+- 3.[dns.la](https://www.dns.la/)
+- 4.[dns.com](https://www.dns.com/)
 
+### 2.CloudFlare Partner平台（合作伙伴）
+- 1.[笨牛](http://cdn.bnxb.com/)
+- 2.[萌精灵](https://cdn.moeelf.com/)
+- 3.[自建（教程）](https://www.331u.com/461.html)
+
+### 3.CloudFlare账号
+- 使用上述第三方CloudFlare Partner时需要使用CloudFlare的账号密码
+- 建议新建CloudFlare账号，与自己常用的账号区分（防止第三方平台保存密码并用于其他用途）
+- 上述推荐是各大教程推荐，风险自担。也可以自行申请CloudFlare Partner并自行搭建
+
+## 2.修改DNS解析[这里面使用dnspod]
+- 修改域名注册商中的Nameservers改为以下两个
+```
+f1g1ns1.dnspod.net
+f1g1ns2.dnspod.net
+```
+
+## 3.注册[dnspod](https://www.dnspod.cn/) [现在已经是腾讯的了]
+## 4.添加域名
+<img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/dnspod添加域名.png' width=400/>
+- 添加完域名后需要等待修改的Nameserver生效
+
+## 5.登入CloudFlare Partner平台
+- 1.这里使用的是 [萌精灵](https://cdn.moeelf.com/)
+- 2.添加域名
+<img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/moeelf添加域名.png' width=400/>
+- 3.添加解析记录
+- 记录名---填写你要配置的二级域名【严格来说是三级域名】
+- 记录类型为---CNAME
+- 记录内容为回源地址（服务器的真实ip），CloudFlare只支持网址，不支持直接ip。
+- CDN---开启
+<img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/moeelf添加DNS记录.png' width=400/>
+- 记录内容中的xxx.xxx替换成自己域名的部分【例如：你的域名是www.example.com,替换成cf.test.example.com】，提交后进入管理中心会出现下图
+<img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/moeelfDNS管理.png' width=400/>
+
+## 6.登入[dnspod](https://www.dnspod.cn/)
+- DNS管理->我的域名->添加记录
+<img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/dnspod添加记录.png' width=400/>
+
+## 7.验证是否添加成功
+- 1.登录[CloudFlare](https://cloudflare.com)
+- 2.点击域名->SSL/TLS->Edge Certificates【参考下图】如果存在则添加正确
+<img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/CloudFlare SSLTLS示例图.png' width=400/>
+
+## 8.自定义CloudFlare ip【示例】
+- 新添加的记录为类型为A、线路类型是联通、记录值是CloudFlare的ip【多播】
+- 这里可以添加不同的线路类型来针对不同的网络环境。
+<img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/dnspod添加记录自定义ip.png' width=400/>
+
+## 9.原理解析
+- 使用CloudFlare DNS【默认】
+<img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/CloudFlare默认解析.png' width=400/>
+
+- 使用dnspod智能解析
+<img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/CloudFlare dnspod解析.png' width=400/>
+
+## 10.最优ip选择
+### 1.联通
+104.23.240.0-104.23.243.254
+
+### 2.移动
+1.0.0.0-1.0.0.254
+1.1.1.0-1.1.1.254
+104.16.80.0-104.16.95.255
+104.16.175.255-104.16.191.255
+
+### 3.hk直连
+- 移动用此ip段比较好
+- hk gcp服务器 ping值大约在40ms左右，回源大约在300ms，但是丢包率达到40%（晚高峰）
+```
+104.16.0.0-104.16.79.255
+104.16.96.0-104.16.175.254
+104.16.192.0-104.16.207.255
+```
+### 4.自动化脚本测试线路
+- 1.利用ping命令测试（每个ip只测试一次，延迟仅供参考）
+- 2.此脚本仅支持Mac、Centos【暂不支持Windows以及其余系统，后续可能会添加】
+```
+bash <(curl -L -s https://raw.githubusercontent.com/mack-a/v2ray-agent/master/ping_tool.sh)
+```
