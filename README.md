@@ -516,7 +516,7 @@ f1g1ns2.dnspod.net
 <img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/CloudFlare默认解析.png' width=500/>
 
 - 使用dnspod智能解析
-<img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/CloudFlare dnspod解析.png' width=700/>
+<img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/CloudFlare dnspod解析.png' width=1000/>
 
 ## 10.最优ip选择
 ### 1.联通
