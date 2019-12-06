@@ -53,6 +53,25 @@
       - [2.配置HTTPS证书](#2配置https证书)
       - [3.回源配置](#3回源配置)
       - [4.增加域名解析CNAME值](#4增加域名解析cname值)
+- [9.cloudflare CNAME自选ip优化方案](#9cloudflare-cname自选ip优化方案)
+  * [1.准备工作](#1准备工作-2)
+    + [1.免费的智能DNS解析](#1免费的智能dns解析)
+    + [2.CloudFlare Partner平台（合作伙伴）](#2cloudflare-partner平台合作伙伴)
+    + [3.CloudFlare账号](#3cloudflare账号)
+  * [2.修改DNS解析【这里使用的是dnspod】](#2修改dns解析这里使用的是dnspod)
+  * [3.注册[dnspod](https://www.dnspod.cn/) 【腾讯】](#3注册dnspod-腾讯)
+  * [4.添加域名](#4添加域名)
+  * [5.登入CloudFlare Partner平台](#5登入cloudflare-partner平台)
+  * [6.登入[dnspod](https://www.dnspod.cn/)](#6登入dnspod)
+  * [7.验证是否添加成功](#7验证是否添加成功)
+  * [8.自定义CloudFlare ip【示例】](#8自定义cloudflare-ip示例)
+  * [9.原理解析](#9原理解析)
+  * [10.最优ip选择](#10最优ip选择)
+    + [1.联通](#1联通)
+    + [2.移动](#2移动)
+    + [3.hk直连](3hk直连)
+    + [4.自动化脚本测试线路](#4自动化脚本测试线路)
+
 * * *
 # 技能点列表
 - [bandwagonhost[centos7]链接一](https://bandwagonhost.com)
@@ -499,6 +518,7 @@ f1g1ns2.dnspod.net
 
 ## 6.登入[dnspod](https://www.dnspod.cn/)
 - DNS管理->我的域名->添加记录
+- 这里添加CNAME的意义在于防止CloudFlare翻车【CloudFlare不允许使用ip接入，只允许CNAME】
 <img src='https://raw.githubusercontent.com/mack-a/v2ray-agent/master/fodder/dnspod添加记录.png' width=500/>
 
 ## 7.验证是否添加成功
