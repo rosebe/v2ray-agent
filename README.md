@@ -59,10 +59,10 @@
     + [2.CloudFlare Partner平台（合作伙伴）](#2cloudflare-partner平台合作伙伴)
     + [3.CloudFlare账号](#3cloudflare账号)
   * [2.修改DNS解析【这里使用的是dnspod】](#2修改dns解析这里使用的是dnspod)
-  * [3.注册[dnspod](https://www.dnspod.cn/) 【腾讯】](#3注册dnspod-腾讯)
+  * [3.注册dnspod) 【腾讯】](#3注册dnspod-腾讯)
   * [4.添加域名](#4添加域名)
   * [5.登入CloudFlare Partner平台](#5登入cloudflare-partner平台)
-  * [6.登入[dnspod](https://www.dnspod.cn/)](#6登入dnspod)
+  * [6.登入dnspod](#6登入dnspod)
   * [7.验证是否添加成功](#7验证是否添加成功)
   * [8.自定义CloudFlare ip【示例】](#8自定义cloudflare-ip示例)
   * [9.原理解析](#9原理解析)
@@ -565,4 +565,14 @@ f1g1ns2.dnspod.net
 - 2.此脚本仅支持Mac、Centos【暂不支持Windows以及其余系统，后续可能会添加】
 ```
 bash <(curl -L -s https://raw.githubusercontent.com/mack-a/v2ray-agent/master/ping_tool.sh)
+```
+### 5.本人使用
+- 联通
+```
+104.23.240.5 152ms
+```
+- 移动
+```
+104.16.192.0 40ms 【丢包严重】
+104.24.105.3 100ms 【不丢包】
 ```
