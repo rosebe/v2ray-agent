@@ -81,5 +81,5 @@ const formatResult = () => {
         console.log(v);
     });
 };
-console.log(process.argv)
+console.log('process.argv:',process.argv)
 // formatResult();
