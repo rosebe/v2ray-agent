@@ -61,6 +61,8 @@ const formatResult = () => {
     let v2rayResult = formatV2rayConfig(v2RayPath);
     let nginxResult = formatNginx(nginxPath);
     let configArr = [];
+    console.log('v2RayPath:', v2RayPath);
+    console.log('nginxPath:', nginxPath);
 
     v2rayResult.forEach(v => {
         let item = nginxResult.filter(v2 => {
@@ -85,9 +87,11 @@ const formatResult = () => {
             });
         });
     });
+    console.log('v2rayResult:', v2rayResult);
     configArr = configArr.map(v => {
         return `${v.ps} vmess://${Buffer.from(JSON.stringify(v)).toString('base64')}`;
     });
+    console.log('configArr:', configArr);
     configArr.forEach(v => {
         console.log(v);
     });
