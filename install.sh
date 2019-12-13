@@ -153,6 +153,69 @@ checkOS(){
         exit
     fi
 }
+# 生成vmess链接
+generatorVmess(){
+    echo -e "${purple}===============================${none}"
+    echo -e "${purple}选择要生成vmess的V2Ray配置文件${none}"
+    echo -e "${green}  1.默认【/usr/bin/V2RayConfig/config_ws_tls.json】${none}"
+    echo -e "${green}  2.官方默认【/etc/v2ray/config.json】${none}"
+    echo -e "${green}  3.手动输入${none}"
+    echo -e "${purple}===============================${none}"
+    echo -e "${skyBlue}请选择【数字编号】:${none}"
+    read -e V2RayPathSelect
+    V2RayPath="";
+
+    if [ "$V2RayPathSelect" == "3" ]
+    then
+        echo -e "${skyBlue}请输入配置文件路径：${none}"
+        read -e V2RayPath
+    fi
+    case $V2RayPathSelect in
+        1)
+            V2RayPath="/usr/bin/V2RayConfig/config_ws_tls.json"
+        ;;
+        2)
+            V2RayPath="/etc/v2ray/config.json"
+        ;;
+    esac
+
+    if [ -z "${V2RayPath}" ]
+    then
+        echo -e ${red}"V2Ray配置文件读取失败，请检查路径"${none}
+        init
+    else
+        # 读取nginx配置文件
+        echo -e "${purple}===============================${none}"
+        echo -e "${purple}选择要生成vmess的Nginx配置文件路径${none}"
+        echo -e "${green}  1.CDN【默认读取/etc/nginx/nginx.conf】${none}"
+        echo -e "${green}  2.手动输入Nginx配置文件路径${none}"
+        echo -e "${green}  3.非CDN${none}"
+        echo -e "${purple}===============================${none}"
+        echo -e "${skyBlue}请选择【数字编号】:${none}"
+        read -e NginxPathSelect
+
+        if [ "$NginxPathSelect" == "2" ]
+        then
+            echo -e "${skyBlue}请输入Nginx配置文件路径：${none}"
+            read -e NginxPath
+        fi
+
+        case $NginxPathSelect in
+            1)
+                NginxPath="/etc/nginx/nginx.conf"
+            ;;
+        esac
+        if [ -z "${NginxPath}" ]
+        then
+            echo -e ${red}"Nginx配置文件读取失败，请检查路径"${none}
+            init
+        fi
+        # 执行node生成vmess链接
+        echo ${V2RayPath},${NginxPath}
+        vmessResult=`curl -L -s https://raw.githubusercontent.com/mack-a/v2ray-agent/master/generator_client_links.js | /root/.nvm/versions/node/v12.8.1/bin/node - ${V2RayPath} ${NginxPath}`
+        echo -e "${skyBlue}${vmessResult}${none}"
+    fi
+}
 startServer(){
     echo -e "${green}启动服务${none}"
     nginx
@@ -175,16 +238,30 @@ installTools(){
     then
         echo -e "${skyBlue}安装zip中...${none}"
         yum install unzip
-    else
-        echo
     fi
     existSocat=`command -v socat`
     if [ -z "$existSocat" ]
     then
         echo -e "${skyBlue}安装socat中...${none}"
         yum install socat
-    else
-        echo
+    fi
+    existJq=`command -v jq`
+    if [ -z "$existJq" ]
+    then
+        echo -e ${skyBlue}安装jq中...${none}
+        yum install jq
+    fi
+    existNode=`command -v node`
+    if [ -z "$existNode" ]
+    then
+        echo -e ${skyBlue}安装Nodejs中...${none}
+        yum install nodejs
+    fi
+    existQrencode=`command -v qrencode`
+    if [ -z "$existQrencode" ]
+    then
+        echo -e ${skyBlue}安装qrencode中...${none}
+        yum install qrencode
     fi
 }
 unInstall(){
@@ -222,8 +299,9 @@ manageFun(){
     echo -e "${skyBlue}  6.启动服务并退出脚本${none}"
     echo -e "${skyBlue}  7.卸载安装的所有内容${none}"
     echo -e "${skyBlue}  8.查看配置文件路径${none}"
-    echo -e "${skyBlue}  9.返回主目录${none}"
-    echo -e "${red}  10.退出脚本${none}"
+    echo -e "${skyBlue}  9.生成Vmess链接${none}"
+    echo -e "${skyBlue}  10.返回主目录${none}"
+    echo -e "${red}  11.退出脚本${none}"
     echo -e "${purple}===============================${none}"
     echo -e "${skyBlue}请输入要执行的功能【数字编号】:${none}"
     read -e funType
@@ -255,9 +333,12 @@ manageFun(){
            configPath
         ;;
         9)
-           init
+           generatorVmess
         ;;
         10)
+           init
+        ;;
+        11)
            exit
         ;;
     esac
@@ -284,6 +365,10 @@ automationFun(){
         ;;
         5)
             startServer
+            automationFun 6
+        ;;
+        6)
+            generatorVmess
             exit
         ;;
     esac
@@ -308,6 +393,7 @@ init(){
         echo -e "${skyBlue}  4.检测https是否安装并配置${none}"
         echo -e "${skyBlue}  5.检测V2Ray是否安装并配置${none}"
         echo -e "${skyBlue}  6.启动服务并退出脚本${none}"
+        echo -e "${skyBlue}  7.生成vmess链接${none}"
         echo -e "${purple}===============================${none}"
         automationFun 1
     elif [ "${automatic}" = 2 ]
@@ -316,3 +402,4 @@ init(){
     fi
 }
 init
+# generatorVmess
