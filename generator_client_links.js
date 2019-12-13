@@ -4,8 +4,8 @@ const fs = require('fs');
  * 格式化nginx配置
  * @returns {string[]}
  */
-const formatNginx = () => {
-    let nginxConfig = fs.readFileSync('./nginx.conf').toString().split('listen');
+const formatNginx = (nginxPath) => {
+    let nginxConfig = fs.readFileSync(nginxPath).toString().split('listen');
     nginxConfig = nginxConfig.map(v => {
         return v.replace(/(^\s*)/g, '');
     }).filter(v => {
@@ -33,8 +33,8 @@ const formatNginx = () => {
 /**
  * 格式化v2ray配置文件
  */
-const formatV2rayConfig = () => {
-    let nginxConfig = fs.readFileSync('./config_ws_tls.json').toString();
+const formatV2rayConfig = (v2RayPath) => {
+    let nginxConfig = fs.readFileSync(v2RayPath).toString();
     nginxConfig = JSON.parse(nginxConfig).inbounds;
     nginxConfig = nginxConfig.map(v => {
         return {
@@ -47,8 +47,19 @@ const formatV2rayConfig = () => {
     return nginxConfig;
 };
 const formatResult = () => {
-    let v2rayResult = formatV2rayConfig();
-    let nginxResult = formatNginx();
+    let v2RayPath = null;
+    let nginxPath = null;
+    if (process && process.argv.length === 4) {
+        v2RayPath = process.argv[2];
+        nginxPath = process.argv[3];
+    }
+    if (!v2RayPath || !nginxPath) {
+        console.log('message 参数错误');
+        return;
+    }
+
+    let v2rayResult = formatV2rayConfig(v2RayPath);
+    let nginxResult = formatNginx(nginxPath);
     let configArr = [];
 
     v2rayResult.forEach(v => {
@@ -81,5 +92,4 @@ const formatResult = () => {
         console.log(v);
     });
 };
-console.log('process.argv:',process.argv)
-// formatResult();
+formatResult();
