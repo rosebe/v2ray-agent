@@ -96,4 +96,6 @@ const formatResult = () => {
         console.log(v);
     });
 };
+console.log('开始');
 formatResult();
+console.log('结束');
